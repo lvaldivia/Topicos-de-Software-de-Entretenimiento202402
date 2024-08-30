@@ -1,5 +1,4 @@
 import Phaser from "phaser"
-
 class GameScene extends Phaser.Scene{
     constructor(){
         super("GameScene");
@@ -11,8 +10,11 @@ class GameScene extends Phaser.Scene{
             allowGravity: false,
             immovable : true
         });
+        this.fires = this.physics.add.group();
         this.createPlatform(this.levelData.platformData);
         this.createPlayer(this.levelData.playerStart);
+        this.createFire(this.levelData.fireData);
+        this.createGorilla();
         this.createMovement();
         //console.log(this.levelData);
     }
@@ -27,13 +29,25 @@ class GameScene extends Phaser.Scene{
         this.platforms.children.iterate(function(platform){
             //platform.body.allowGravity = false;
             platform.setOrigin(0,0);
-           // platform.body.immovable = true;
+            // platform.body.immovable = true;
         });
         this.ground = this.physics.add.sprite(0,0,"ground");
         this.ground.setOrigin(0,0);
         this.ground.y = this.game.config.height - this.ground.height;
         this.ground.body.allowGravity = false;
         this.ground.body.immovable = true;
+    }
+    createGorilla() {
+        this.gorilla = this.physics.add.sprite(0,0,"gorilla");
+        this.gorilla.setOrigin(0,0);
+    }
+    createFire(data) {
+        data.forEach(element => {
+            this.fires.create(element.x,element.y,"fire");
+        });
+        this.fires.children.iterate(function(platform){
+            platform.setOrigin(0,0);
+        });
     }
     createPlayer(playerStart){
         //this.player = this.add.sprite(playerStart.x,playerStart.y,"player");
@@ -48,6 +62,8 @@ class GameScene extends Phaser.Scene{
     update(){
         this.physics.add.collider(this.player,this.ground);
         this.physics.add.collider(this.player,this.platforms);
+        this.physics.add.collider(this.gorilla,this.platforms);
+        this.physics.add.collider(this.fires,this.platforms);
         if(this.player.body.touching.down && this.cursor.up.isDown){
             this.player.setVelocityY(-700);
         }
@@ -61,8 +77,8 @@ class GameScene extends Phaser.Scene{
             this.player.setVelocityX(150);
             //console.log('presione derecha');
         }else{
-            this.player.setVelocityX(0);
+             this.player.setVelocityX(0);
         }
-    }
+    }   
 }
 export default GameScene
