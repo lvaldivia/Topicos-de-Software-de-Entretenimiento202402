@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="game"></div>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@v3.80.1/dist/phaser.min.js">
+    </script>
+    <script>
+        class PlayGame extends Phaser.Scene{
+            constructor(){
+                super("PlayGame");
+            }
+            preload(){
+                this.load.image("logo","phaser3-logo.png");
+            }
+            create(){
+                this.image = this.add.image(400,300,"logo");
+            }
+            update(){
+                this.image.rotation += 0.01;
+            }
+        }
+        let game = new Phaser.Game({
+            type : Phaser.AUTO,
+            width : 800,
+            height : 600,
+            parent: 'game',
+            scene : PlayGame
+        });
+    </script>
+</body>
+</html>
