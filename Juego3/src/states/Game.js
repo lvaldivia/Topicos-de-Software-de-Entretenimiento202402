@@ -26,7 +26,50 @@ class GameScene extends Phaser.Scene{
         this.physics.add.collider(this.fires,this.platforms);
         this.physics.add.collider(this.barrils,this.platforms);
         //this.physics.add.collider(this.barrils,this.ground);
-        
+        this.createButtons();
+    }
+    createButtons(){
+        this.playerLeft = false;
+        this.playerRight = false;
+        this.playerJump = false;
+        this.actionButton = this.add.sprite(0,0,'actionButton');
+        this.actionButton.setInteractive();
+        this.actionButton.x = this.game.config.width - this.actionButton.width;
+        this.actionButton.y = this.game.config.height - this.actionButton.height;
+        this.actionButton.on("pointerdown",this.jump,this);
+        this.actionButton.on("pointerup",this.cancelJump,this);
+
+        this.leftButton = this.add.sprite(0,0,'arrowButton');
+        this.leftButton.x = this.leftButton.width;
+        this.leftButton.setInteractive();
+        this.leftButton.y = this.game.config.height - this.leftButton.height;
+        this.leftButton.on("pointerdown",this.moveLeft,this);
+        this.leftButton.on("pointerup",this.cancelMoveLeft,this);
+
+        this.rightButton = this.add.sprite(0,0,'arrowButton');
+        this.rightButton.setInteractive();
+        this.rightButton.x = this.leftButton.x  + this.leftButton.width + 25;
+        this.rightButton.y = this.game.config.height - this.rightButton.height;
+        this.rightButton.on("pointerdown",this.moveRight,this);
+        this.rightButton.on("pointerup",this.cancelMoveRight,this);
+    }
+    cancelMoveRight(){
+        this.playerRight = false;
+    }
+    cancelMoveLeft(){
+        this.playerLeft = false;
+    }
+    cancelJump(){
+        this.playerJump = false;
+    }
+    jump(){
+        this.playerJump = true;
+    }
+    moveLeft(){
+        this.playerLeft = true;
+    }
+    moveRight(){
+        this.playerRight = true;
     }
     createPlatform(data){
         data.forEach(element => {
@@ -114,17 +157,18 @@ class GameScene extends Phaser.Scene{
                 barrel.disableBody(true,true); /*= muerto */
             }
         });
-        if(this.player.body.touching.down && this.cursor.up.isDown){
+        if(this.player.body.touching.down 
+            && (this.cursor.up.isDown || this.playerJump)){
             this.player.setVelocityY(-700);
             this.player.play("jump");
         }
-        if(this.cursor.left.isDown){
+        if(this.cursor.left.isDown || this.playerLeft){
             this.player.setVelocityX(-150);
             this.player.scaleX = 1;
             this.player.body.setOffset(0,0);
             this.player.play("run");
         }
-        else if(this.cursor.right.isDown){
+        else if(this.cursor.right.isDown || this.playerRight){
             this.player.scaleX = -1;
             this.player.setVelocityX(150);
             this.player.body.setOffset(this.player.width,0);
