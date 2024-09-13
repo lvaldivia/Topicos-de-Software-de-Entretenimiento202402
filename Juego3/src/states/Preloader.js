@@ -18,7 +18,7 @@ class PreloaderScene extends Phaser.Scene{
         this.load.image("platform","assets/images/platform.png");
         this.load.spritesheet("player",
             "assets/images/player_spritesheet.png",{
-                frameWidth : 28,
+                frameWidth : 29,
                 frameHeight : 30
             });
         this.load.spritesheet("fire",
