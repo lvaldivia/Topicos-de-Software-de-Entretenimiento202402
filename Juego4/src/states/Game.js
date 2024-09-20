@@ -26,13 +26,55 @@ class GameScene extends Phaser.Scene{
         this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.spaceBar.on('down',this.jump,this);
         this.input.on('pointerdown',this.jump,this);
-        this.physics.add.collider(this.player,this.walls);
         this.score = 0;
+        this.scoreText = this.add.text(0,0,'Score: '+this.score,{
+            font: '64px Arial',
+            fill: '#FFFFFF'
+        });
+        this.scoreText.setDepth(9999);
+        if(localStorage.hasOwnProperty('score')){
+            this.maxScoreText = this.add.text(0,0,'Max Score: '+localStorage.score,{
+                font: '64px Arial',
+                fill: '#FFFFFF'
+            });
+            this.maxScoreText.x = this.game.config.width - this.maxScoreText.width;
+            this.maxScoreText.setDepth(9999);
+        }
+
+        this.physics.add.collider(this.player,this.walls,
+                this.hitWall,null,this);
+    }
+    hitWall(object1,object2){
+        //object1.setActive(false);
+        //object1.setVisible(false);
+        object1.disableBody(true,true);
+        if(this.score > 0){
+            localStorage.score = this.score;
+        }
+        this.gameOverText = this.add.text(0,0,'Game Over, click to continue',{
+            font: '64px Arial',
+            fill: '#FFFFFF'
+        });
+        this.gameOverText.setOrigin(0.5,0.5);
+        this.gameOverText.x = this.game.config.width / 2;
+        this.gameOverText.y = this.game.config.height / 2;
+        this.gameOverText.setInteractive();
+        this.gameOverText.on('pointerdown',function(){
+            this.scene.start('GameScene');
+        },this);
+        this.walls.children.iterate(function(wall){
+            if(wall.active){
+                wall.disableBody(true,true);
+            }
+        });
     }
     jump(){
         this.player.setVelocityY(this.jumpForce);
     }
     update(time,delta){
+        if(!this.player.active && !this.player.visible){
+            return;
+        }
         this.background.tilePositionX -= 1;
         this.spawnWall+=delta;
         if(this.player.body.velocity.y > -20){
@@ -50,7 +92,8 @@ class GameScene extends Phaser.Scene{
                     if(!wall.scored){
                         wall.scored = true;
                         this.score+=0.5;
-                        console.log(this.score);
+                        this.scoreText.text = 'Score: '+this.score;
+                        
                     }
                 }
                 else if(wall.x + wall.width < 0){
