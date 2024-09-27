@@ -98,13 +98,16 @@ class GameScene extends Phaser.Scene{
                         -100, nextEnemy.health,nextEnemy.key,nextEnemy.scale,
                         nextEnemy.speedX,nextEnemy.speedY
                     );
+                    this.currentIndexEnemy++;
                     this.scheduleNextEnemy();
                 },
             });
         }
     }
     createEnemy(x,y,health,key,scale,speedX,speedY){
-
+        let enemy = new Enemy(this,x,y,key,health,scale,
+                                speedX,speedY,this.enemyBullets);
+        this.enemies.add(enemy);
     }
     hitEnemy(bullet,enemy){
         bullet.destroy();

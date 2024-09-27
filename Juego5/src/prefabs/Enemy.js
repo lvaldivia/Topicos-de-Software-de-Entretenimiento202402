@@ -1,10 +1,13 @@
 import EnemyBullet from "./EnemyBullet";
 
 class Enemy extends Phaser.Physics.Arcade.Sprite{
-    constructor(scene,x,y,key,health,enemyBullets){
+    constructor(scene,x,y,key,health,scale,speedX,speedY,enemyBullets){
         super(scene,x,y,key);
         scene.add.existing(this);
         scene.physics.add.existing(this);
+        this.scale = scale;
+        this.speedX = speedX;
+        this.speedY = speedY;
         this.enemyBullets = enemyBullets;
         this.setOrigin(0.5);
         this.health = health;
@@ -14,6 +17,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite{
             frameRate: 25,
             repeat:0
         });
+        this.body.setVelocity(this.speedX,this.speedY);
         this.startShooting();
     }
     startShooting(){
