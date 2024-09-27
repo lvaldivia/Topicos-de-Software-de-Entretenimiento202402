@@ -18,12 +18,12 @@ class Enemy extends Phaser.Physics.Arcade.Sprite{
     }
     startShooting(){
         this.shoot();
-        /*this.shootingTimer = this.scene.time.addEvent({
+        this.shootingTimer = this.scene.time.addEvent({
             delay:2000,
-            callbackScope: this.scene.game,
+            callbackScope: this,
             callback:this.shoot,
             loop : true
-        });*/
+        });
     }
     shoot(){
         let bullet = new EnemyBullet(this.scene,this.x,this.y);
