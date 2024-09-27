@@ -27,6 +27,20 @@ class GameScene extends Phaser.Scene{
             callbackScope : this,
             loop : true
         });
+        this.initEnemy();
+        this.physics.add.overlap(this.playerBullets,this.enemies,
+            this.hitEnemy,null,this);
+    }
+    initEnemy(){
+        this.enemies =  this.add.group({runChildUpdate:true});
+        this.enemyBullets = this.add.group();
+        let enemy = new Enemy(this,100,100,'greenEnemy',10,this.enemyBullets);
+        enemy.body.setVelocity(100,50);
+        this.enemies.add(enemy);
+    }
+    hitEnemy(bullet,enemy){
+        bullet.destroy();
+        enemy.getHit(1);
     }
     initBullets(){
         this.playerBullets = this.add.group();
