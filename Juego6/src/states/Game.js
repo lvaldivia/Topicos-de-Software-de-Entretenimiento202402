@@ -7,6 +7,7 @@ class GameScene extends Phaser.Scene{
     }
     init(){
         this.floorPool = this.add.group();
+        this.platformPool = this.add.group();
         this.maxJumpDistance = 120;
         this.cursors = this.input.keyboard.createCursorKeys();
         this.myCoins = 0;
@@ -26,23 +27,29 @@ class GameScene extends Phaser.Scene{
         });
         this.player.anims.play('running');
         this.player.body.setSize(38,60);
-        this.platform = new Platform(this,this.floorPool,15,0,200,-this.levelSpeed);
+        //this.player.setCollideWorldBounds(true);
+        this.currentPlatform = new Platform(this,this.floorPool,15,0,200,-this.levelSpeed);
+        this.platformPool.add(this.currentPlatform);
+        this.loadLevel();
     }
     update(){
-        this.physics.collide(this.player,this.platform);
+        this.physics.collide(this.player,this.platformPool);
         if(this.cursors.up.isDown){
             //this.player.setVelocityY(-400);
             this.playerJump();
         }else if(this.cursors.up.isUp){
             this.isJumping = false;
         }
-        /*if(this.cursors.left.isDown){
-            this.player.setVelocityX(-150);
-        }else if(this.cursors.right.isDown){
-            this.player.setVelocityX(150);
-        }else{
-            this.player.setVelocityX(0);
-        }*/
+        if(this.currentPlatform.getLength() && 
+            this.currentPlatform.getLast(true).getRightCenter().x < this.game.config.width ){
+                this.createPlatfom();
+        }
+        this.platformPool.getChildren().forEach(platform=>{
+            let last = platform.getLast(true);
+            if(last && last.getBounds().right < 0){
+                platform.kill();
+            }
+        });
     }
     playerJump(){
         if(this.player.body.touching.down){
@@ -57,6 +64,36 @@ class GameScene extends Phaser.Scene{
             }else{
                 this.jumpPeaked = true;
             }
+        }
+    }
+    loadLevel(){
+        this.levelData = {
+            platforms: [
+              { separation: 50, y: 200, numTiles: 4 },
+              { separation: 50, y: 250, numTiles: 6 },
+              { separation: 100, y: 200, numTiles: 3 },
+              { separation: 50, y: 250, numTiles: 8 },
+              { separation: 100, y: 200, numTiles: 10 },
+              { separation: 100, y: 300, numTiles: 4 },
+              { separation: 50, y: 200, numTiles: 4 }
+            ]
+          };
+        this.currIndex = 0;
+        this.createPlatfom();
+    }
+    createPlatfom(){
+        let nextPlatformData = this.levelData.platforms[this.currIndex];
+        if(nextPlatformData){
+            this.currIndex++;
+            this.currentPlatform = new Platform(
+                this,
+                this.floorPool,
+                nextPlatformData.numTiles,
+                this.game.config.width + nextPlatformData.separation,
+                nextPlatformData.y,
+                -this.levelSpeed
+            );
+            this.platformPool.add(this.currentPlatform);
         }
     }
 }

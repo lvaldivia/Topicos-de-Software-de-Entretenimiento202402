@@ -8,6 +8,7 @@ class Platform extends Phaser.Physics.Arcade.Group{
         scene.add.existing(this);
     }
     prepare(numTiles,x,y,speed){
+        this.alive = true;
         let i = 0;
         while(i<numTiles){
             let floorTile = this.floorPool.getFirstDead();
@@ -29,6 +30,14 @@ class Platform extends Phaser.Physics.Arcade.Group{
         }
         this.getChildren().forEach(tile=>{
             tile.body.velocity.x = speed;
+        });
+    }
+    kill(){
+        this.alive = false;
+        this.getChildren().forEach(tile=>{
+            tile.setActive(false);
+            tile.setVisible(false);
+            this.floorPool.add(tile);
         });
     }
 }
