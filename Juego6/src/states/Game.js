@@ -67,7 +67,7 @@ class GameScene extends Phaser.Scene{
         }
     }
     loadLevel(){
-        this.levelData = {
+        /*this.levelData = {
             platforms: [
               { separation: 50, y: 200, numTiles: 4 },
               { separation: 50, y: 250, numTiles: 6 },
@@ -78,23 +78,49 @@ class GameScene extends Phaser.Scene{
               { separation: 50, y: 200, numTiles: 4 }
             ]
           };
-        this.currIndex = 0;
+        this.currIndex = 0;*/
         this.createPlatfom();
     }
+    generateRandomPlatform(){
+        let data = {};
+        let minSeparation = 60;
+        let maxSeparation = 200;
+        data.separation = 
+            minSeparation + Math.random() * (maxSeparation - minSeparation);
+        let minDifY = -120;
+        let maxDifY = 120;
+        let previousPlatformY = this.currentPlatform.getChildren()[0].y;
+        data.y = previousPlatformY  
+                + minDifY + Math.random() * (maxDifY- minDifY);
+        
+        data.y = Math.max(150,data.y);
+        data.y = Math.min(this.game.config.height - 50,data.y);
+        let minTiles = 1;
+        let maxTiles = 5;
+        data.numTiles = Math.floor(minTiles+Math.random() * (maxTiles - minTiles));
+        return data;
+    }
     createPlatfom(){
-        let nextPlatformData = this.levelData.platforms[this.currIndex];
+        let nextPlatformData = this.generateRandomPlatform();
         if(nextPlatformData){
-            this.currIndex++;
-            this.currentPlatform = new Platform(
-                this,
-                this.floorPool,
-                nextPlatformData.numTiles,
-                this.game.config.width + nextPlatformData.separation,
-                nextPlatformData.y,
-                -this.levelSpeed
-            );
-            this.platformPool.add(this.currentPlatform);
+            this.currentPlatform = this.platformPool.getFirstDead();
+            if(!this.currentPlatform){
+                this.currentPlatform = new Platform(this,
+                    this.floorPool,nextPlatformData.numTiles,
+                    this.game.config.width + nextPlatformData.separation,
+                    nextPlatformData.y,
+                    -this.levelSpeed
+                );
+            }else{
+                this.currentPlatform.prepare(
+                    nextPlatformData.numTiles,
+                    this.game.config.width + nextPlatformData.separation,
+                    nextPlatformData.y,
+                    -this.levelSpeed
+                );
+            }
         }
+        this.platformPool.add(this.currentPlatform);
     }
 }
 export default GameScene
