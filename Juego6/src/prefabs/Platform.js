@@ -1,8 +1,10 @@
 class Platform extends Phaser.Physics.Arcade.Group{
-    constructor(scene,floorPool,numTiles,x,y,speed){
+    constructor(scene,floorPool,numTiles,x,y,speed,coinsPool){
         super(scene.physics.world,scene);
         this.tileSize = 40;
         this.scene = scene;
+        this.coinsPool = coinsPool;
+        console.log(this.coinsPool);
         this.floorPool = floorPool;
         this.prepare(numTiles,x,y,speed);
         scene.add.existing(this);
@@ -31,6 +33,7 @@ class Platform extends Phaser.Physics.Arcade.Group{
         this.getChildren().forEach(tile=>{
             tile.body.velocity.x = speed;
         });
+        this.addCoins(speed);
     }
     kill(){
         this.alive = false;
@@ -39,6 +42,25 @@ class Platform extends Phaser.Physics.Arcade.Group{
             tile.setVisible(false);
             this.floorPool.add(tile);
         });
+    }
+    addCoins(speed){
+        let coinsY = 90 + Math.random() * 110;
+        this.getChildren().forEach(tile=>{
+            if(Math.random()<=0.4){ 
+                let coin = this.coinsPool.getFirstDead();
+                if(!coin){
+                    coin 
+                    = this.scene.physics.add.sprite(tile.x,tile.y - coinsY,'coin');
+                }else{
+                    coin.setPosition(tile.x,tile.y-coinsY);
+                    coin.setActive(true);
+                    coin.setVisible(true);
+                }
+                coin.body.velocity.x = speed;
+                coin.body.setAllowGravity(false);
+            }
+        });
+        
     }
 }
 export default Platform;

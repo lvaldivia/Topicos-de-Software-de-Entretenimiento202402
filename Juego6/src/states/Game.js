@@ -8,6 +8,7 @@ class GameScene extends Phaser.Scene{
     init(){
         this.floorPool = this.add.group();
         this.platformPool = this.add.group();
+        this.coinsPool = this.add.group();
         this.maxJumpDistance = 120;
         this.cursors = this.input.keyboard.createCursorKeys();
         this.myCoins = 0;
@@ -28,7 +29,8 @@ class GameScene extends Phaser.Scene{
         this.player.anims.play('running');
         this.player.body.setSize(38,60);
         //this.player.setCollideWorldBounds(true);
-        this.currentPlatform = new Platform(this,this.floorPool,15,0,200,-this.levelSpeed);
+        this.currentPlatform = new Platform(this,this.floorPool,50,0,200,
+                -this.levelSpeed,this.coinsPool);
         this.platformPool.add(this.currentPlatform);
         this.loadLevel();
     }
@@ -109,14 +111,16 @@ class GameScene extends Phaser.Scene{
                     this.floorPool,nextPlatformData.numTiles,
                     this.game.config.width + nextPlatformData.separation,
                     nextPlatformData.y,
-                    -this.levelSpeed
+                    -this.levelSpeed,
+                    this.coinsPool
                 );
             }else{
                 this.currentPlatform.prepare(
                     nextPlatformData.numTiles,
                     this.game.config.width + nextPlatformData.separation,
                     nextPlatformData.y,
-                    -this.levelSpeed
+                    -this.levelSpeed,
+                    this.coinsPool
                 );
             }
         }
