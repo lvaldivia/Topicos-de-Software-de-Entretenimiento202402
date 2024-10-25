@@ -2,8 +2,10 @@ import PreloadScene from "./states/Preload";
 import GameScene from "./states/Game";
 
 let config = {
-    width: window.innerWidth /*100%*/,
-    height: window.innerHeight,
+    /*width: window.innerWidth 100%,
+    height: window.innerHeight,*/
+    width: 480 ,
+    height: 320,
     scene: [PreloadScene,GameScene],
     scale:{
         mode: Phaser.Scale.FIT,

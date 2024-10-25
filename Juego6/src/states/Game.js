@@ -14,10 +14,23 @@ class GameScene extends Phaser.Scene{
         this.myCoins = 0;
         this.isJumping = false;
         this.jumpPeaked = false;
+        this.isGameOver = false;
         this.startJumpY = 0;
         this.levelSpeed = 200;
+        this.coinSound = this.sound.add('coin');
     }
     create(){
+        this.background = this.add.tileSprite(0,0,this.game.config.width,
+            this.game.config.height,'background'
+        );
+        this.background.setOrigin(0,0);
+        this.background.setTileScale(2,1);
+        this.water = this.add.tileSprite(0,this.game.config.height -30,
+            this.game.config.width,
+            30,'water'
+        );
+        this.water.setOrigin(0,0);
+        this.water.setTileScale(2,1);
         this.player = this.physics.add.sprite(50,140,'player');
         this.player.setOrigin(0.5);
         this.anims.create({
@@ -29,17 +42,22 @@ class GameScene extends Phaser.Scene{
         this.player.anims.play('running');
         this.player.body.setSize(38,60);
         //this.player.setCollideWorldBounds(true);
-        this.currentPlatform = new Platform(this,this.floorPool,50,0,200,
+        this.currentPlatform = new Platform(this,this.floorPool,11,0,200,
                 -this.levelSpeed,this.coinsPool);
         this.platformPool.add(this.currentPlatform);
         this.loadLevel();
     }
     update(){
+        if(this.isGameOver){
+            return;
+        }
+        this.background.tilePositionX -= this.levelSpeed/100;
         this.physics.collide(this.player,this.platformPool);
-        if(this.cursors.up.isDown){
+        this.physics.overlap(this.player,this.coinsPool,this.collecCoins,null,this);
+        if(this.cursors.up.isDown || this.input.activePointer.isDown){
             //this.player.setVelocityY(-400);
             this.playerJump();
-        }else if(this.cursors.up.isUp){
+        }else if(this.cursors.up.isUp && !this.input.activePointer.isDown){
             this.isJumping = false;
         }
         if(this.currentPlatform.getLength() && 
@@ -52,6 +70,74 @@ class GameScene extends Phaser.Scene{
                 platform.kill();
             }
         });
+        this.coinsPool.getChildren().forEach(coin=>{
+            if(coin.x + coin.width <= 0){
+                coin.setActive(false);
+                coin.setVisible(false);
+            }
+        })
+        if(this.player.getBounds().top > this.game.config.height
+        || this.player.getBounds().left <=0){
+            this.gameOver();
+        }
+    }
+    collecCoins(player,coin){
+        coin.setActive(false);
+        coin.setVisible(false);
+        coin.disableBody(true,true);
+        this.myCoins++;
+        this.coinSound.play();
+    }
+    gameOver(){
+        this.player.setActive(false);
+        this.player.setVisible(false);
+        this.player.disableBody(true,true);
+        this.showGameOver();
+        //this.restart();
+    }
+    showGameOver() {
+        this.overlay = this.add.graphics();
+        this.overlay.fillStyle(0x000000, 1);
+        this.overlay.setAlpha(0)
+        this.overlay.fillRect(
+            0, 0,
+            this.game.config.width, this.game.config.height);
+        this.tweens.add(
+            {
+                targets: this.overlay,
+                alpha: 0.55,
+                duration: 500,
+                onComplete: () => {
+                    //this.background.setVisible(false);
+                    //this.water.setVisible(false);
+                    let style = { font: '30px Arial', fill: '#fff' };
+                    this.add.text(
+                        this.game.config.width / 2, this.game.config.height / 2 - 30,
+                        'GAME OVER', style
+                    ).setOrigin(0.5);
+                    style = { font: '20px Arial', fill: '#fff' };
+                    this.add.text(
+                        this.game.config.width / 2, this.game.config.height / 2 + 50,
+                        'High Score: ', style
+                    ).setOrigin(0.5);
+                    this.add.text(
+                        this.game.config.width / 2, this.game.config.height / 2 + 80,
+                        'Current Score: ', style
+                    ).setOrigin(0.5);
+                    this.add.text(
+                        this.game.config.width / 2, this.game.config.height / 2 + 10,
+                        'Tap to play again', style
+                    ).setOrigin(0.5);
+                    this.input.once('pointerdown', this.restart, this);
+                }
+
+            }
+
+        );
+
+    }
+    restart(){
+        this.scene.start('GameScene');
     }
     playerJump(){
         if(this.player.body.touching.down){
