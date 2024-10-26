@@ -102,6 +102,17 @@ class GameScene extends Phaser.Scene{
         this.overlay.fillRect(
             0, 0,
             this.game.config.width, this.game.config.height);
+        let maxScore = 0;
+        if(localStorage.hasOwnProperty('maxScore')){
+            maxScore = localStorage.maxScore;
+            if(maxScore < this.myCoins){
+                maxScore = this.myCoins;
+                localStorage.maxScore = maxScore;
+            }
+        }else{
+            localStorage.maxScore = this.myCoins;
+            maxScore = this.myCoins;
+        }
         this.tweens.add(
             {
                 targets: this.overlay,
@@ -118,11 +129,11 @@ class GameScene extends Phaser.Scene{
                     style = { font: '20px Arial', fill: '#fff' };
                     this.add.text(
                         this.game.config.width / 2, this.game.config.height / 2 + 50,
-                        'High Score: ', style
+                        'High Score: '+maxScore, style
                     ).setOrigin(0.5);
                     this.add.text(
                         this.game.config.width / 2, this.game.config.height / 2 + 80,
-                        'Current Score: ', style
+                        'Current Score: '+this.myCoins, style
                     ).setOrigin(0.5);
                     this.add.text(
                         this.game.config.width / 2, this.game.config.height / 2 + 10,

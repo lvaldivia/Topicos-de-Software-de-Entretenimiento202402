@@ -1,0 +1,23 @@
+<html>
+<head>
+	<script type='text/javascript' src='phaser.min.js'></script>
+	<script type='text/javascript' src='scripts/Boost.js'></script>
+	<script type='text/javascript' src='scripts/Preloader.js'></script>
+	<script type='text/javascript' src='scripts/Menu.js'></script>
+	<script type='text/javascript' src='scripts/Game.js'></script>
+	<title>Monster Wants Candy</title>
+</head>
+<body>
+<script type='text/javascript'>
+	window.onload = function(){
+		var game = new Phaser.Game(640,960,Phaser.AUTO);
+		var Global = {};
+		game.state.add('Boost',Boost);
+		game.state.add('Preloader',Preloader);
+		game.state.add('Menu',Menu);
+		game.state.add('Game',Game);
+		game.state.start('Boost');
+	}
+</script>
+</body>
+</html>
