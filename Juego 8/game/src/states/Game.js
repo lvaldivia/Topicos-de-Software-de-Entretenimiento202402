@@ -28,15 +28,25 @@ class GameScene extends Phaser.Scene{
         this.collisionLayer.setCollisionBetween(1,156);
     }
     initEnemy(){
-        this.enemies = this.add.group();
+        this.enemies = this.add.group({runChildUpdate:true});
         const enemyData = this.findObjectsByType('enemy',this.map,'objectsLayer');
         let enemy;
         enemyData.forEach((element=>{
             enemy = new Enemy(this,element.x,element.y,'slime',
                     element.properties.velocity,this.map);
             this.enemies.add(enemy);
+
         }));
         this.physics.add.collider(this.enemies,this.collisionLayer);
+        this.physics.add.collider(this.player,this.enemies,
+                this.hitEnemy,null,this);
+    }
+    hitEnemy(player,enemy){
+        if(enemy.body.touching.up){
+            enemy.destroy();
+            player.setVelocityY(-this.BOUNCIG_SPEED);
+            this.score++;
+        }
     }
     initPlayer(){
         const playerData = this.findObjectsByType('player',this.map,'objectsLayer');
@@ -54,7 +64,11 @@ class GameScene extends Phaser.Scene{
         this.cursors = this.input.keyboard.createCursorKeys();
     }
     update(){
-        
+        /*this.enemies.children.iterate((enemy=>{
+            if(enemy){
+                ene
+            }
+        }));*/
         this.player.body.setVelocityX(0);
         if (this.cursors.left.isDown) {
             this.player.setVelocityX(-200);

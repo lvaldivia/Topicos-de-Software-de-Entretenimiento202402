@@ -8,7 +8,8 @@ class Enemy extends Phaser.Physics.Arcade.Sprite{
         this.setOrigin(0.5,0.5);
         this.body.setCollideWorldBounds(true);
         this.body.bounce.set(1,0);
-        this.body.velocity.x = 2;
+        console.log(velocity);
+        this.body.velocity.x = velocity / 2;
     }
     update(){
         let direccion;
@@ -23,7 +24,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite{
         let nextY = this.y +(this.height/2)+1;
         let nextTile = this.tilemap.getTileAtWorldXY(nextX,nextY,true,
                 this.scene.cameras.main,'collisionLayer');
-        if(!nextTile && this.body.blocked.down){
+        if((!nextTile || nextTile.index == -1 ) && this.body.blocked.down){
             this.body.velocity.x *= -1;
         }
     }
