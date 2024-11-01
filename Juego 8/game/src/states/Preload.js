@@ -6,6 +6,7 @@ class PreloadScene extends Phaser.Scene{
     }
     preload(){
         this.load.image('tiles', 'assets/images/tiles_spritesheet.png');   
+        this.load.image('slime', 'assets/images/slime.png');   
         this.load.spritesheet('player', 'assets/images/player_spritesheet.png', {
             frameWidth: 28,
             frameHeight: 30,
