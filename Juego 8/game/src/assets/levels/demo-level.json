@@ -62,7 +62,7 @@
                  "properties":
                     {
                      "key":"goal",
-                     "nextLevel":"level2",
+                     "nextLevel":"level1",
                      "type":"goal"
                     },
                  "type":"",

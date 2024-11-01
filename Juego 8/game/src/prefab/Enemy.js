@@ -20,6 +20,9 @@ class Enemy extends Phaser.Physics.Arcade.Sprite{
             this.setFlipX(false);
             direccion = -1;
         }
+        if(this.body.velocity.y == 0){
+            this.body.setVelocity(direccion*Math.abs(this.body.velocity.x|| 50));
+        }
         let nextX = this.x +direccion * (Math.abs(this.width)/2+1);
         let nextY = this.y +(this.height/2)+1;
         let nextTile = this.tilemap.getTileAtWorldXY(nextX,nextY,true,

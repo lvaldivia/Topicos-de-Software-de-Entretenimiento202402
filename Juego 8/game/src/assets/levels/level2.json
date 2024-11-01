@@ -47,7 +47,7 @@
                  "properties":
                     {
                      "key":"goal",
-                     "nextLevel":"level1",
+                     "nextLevel":"demo",
                      "type":"goal"
                     },
                  "type":"",
